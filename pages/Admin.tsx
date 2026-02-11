@@ -1,12 +1,13 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { User } from '@supabase/supabase-js';
 import { Order, OrderStatus } from '../types';
 import { 
   ShieldAlert, LogOut, ShoppingBag, Search, ExternalLink, RefreshCcw, CheckCircle2, 
   Loader2, Truck, Save, Check, FileText, Image as ImageIcon, MapPin, Phone, 
-  MessageCircle, Calendar, Maximize2, X 
+  MessageCircle, Calendar, Maximize2, X, MessageSquareWarning
 } from 'lucide-react';
 
 interface AdminProps { user: User; }
@@ -19,18 +20,27 @@ const Admin: React.FC<AdminProps> = ({ user }) => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [trackingInputs, setTrackingInputs] = useState<Record<string, string>>({});
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+      // Ensuring we fetch ALL orders without any user filters
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
       if (error) throw error;
+      
+      console.log('Admin Orders fetched from Supabase:', data);
+      
       setOrders(data || []);
       const inputs: Record<string, string> = {};
       data?.forEach(order => inputs[order.id] = order.tracking_number || '');
       setTrackingInputs(inputs);
     } catch (err) {
-      console.error('Fetch Error:', err);
+      console.error('Admin Fetch Orders Error:', err);
     } finally {
       setLoading(false);
     }
@@ -79,6 +89,10 @@ const Admin: React.FC<AdminProps> = ({ user }) => {
           <div><h1 className="font-black text-slate-900 text-xl tracking-tight leading-none">إدارة Wassit DZ</h1></div>
         </div>
         <div className="flex items-center gap-4">
+          <Link to="/admin/complaints" className="flex items-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-xl font-black text-xs hover:bg-red-100 transition-colors">
+            <MessageSquareWarning size={16} />
+            إدارة الشكاوى
+          </Link>
           <button onClick={fetchOrders} className="p-2 text-slate-400 hover:text-indigo-600"><RefreshCcw size={20} className={loading ? 'animate-spin' : ''}/></button>
           <button onClick={() => supabase.auth.signOut()} className="text-slate-600 hover:text-red-600 font-bold text-sm bg-slate-100 px-4 py-2 rounded-xl transition-all">خروج</button>
         </div>

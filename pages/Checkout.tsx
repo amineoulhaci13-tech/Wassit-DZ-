@@ -10,16 +10,11 @@ import {
   CheckCircle2, 
   Upload, 
   Loader2, 
-  ReceiptText, 
-  ShieldCheck, 
   Copy, 
-  Clock, 
   PartyPopper,
   ArrowLeft,
-  Smartphone,
-  ShieldAlert,
-  Lock,
-  AlertCircle
+  AlertCircle,
+  Banknote
 } from 'lucide-react';
 
 interface CheckoutProps {
@@ -35,6 +30,8 @@ const Checkout: React.FC<CheckoutProps> = ({ user }) => {
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [success, setSuccess] = useState(false);
   const [status, setStatus] = useState<{ type: 'success' | 'error' | null; message: string }>({ type: null, message: '' });
+
+  const ACCOUNT_RIP = '00799999004290770859';
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -66,6 +63,12 @@ const Checkout: React.FC<CheckoutProps> = ({ user }) => {
     }
   };
 
+  const copyToClipboard = (text: string, msg: string) => {
+    navigator.clipboard.writeText(text);
+    setStatus({ type: 'success', message: msg });
+    setTimeout(() => setStatus({ type: null, message: '' }), 2000);
+  };
+
   const handleConfirmPayment = async () => {
     if (!proofFile || !order) {
       setStatus({ type: 'error', message: 'يرجى اختيار ملف الوصل أولاً' });
@@ -76,7 +79,6 @@ const Checkout: React.FC<CheckoutProps> = ({ user }) => {
     setStatus({ type: null, message: '' });
 
     try {
-      // 1. Upload to Storage
       const fileExt = proofFile.name.split('.').pop();
       const fileName = `${user.id}/payment_${order.id}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -87,35 +89,28 @@ const Checkout: React.FC<CheckoutProps> = ({ user }) => {
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
       const { data: { publicUrl } } = supabase.storage
         .from('order-assets')
         .getPublicUrl(filePath);
 
-      // 3. Update Order Table with Correct Mappings
-      // Explicitly ensuring total_price_dzd is a number if it needs re-verification,
-      // though typically only proof URL and status change here.
       const { error: updateError } = await supabase
         .from('orders')
         .update({ 
           payment_proof_url: publicUrl,
           status: 'Paid',
-          total_price_dzd: Number(order.total_price_dzd) // Ensuring numeric type
+          total_price_dzd: Number(order.total_price_dzd)
         })
         .eq('id', order.id);
 
       if (updateError) {
-        console.error("Supabase Update Error Payload:", updateError);
-        throw new Error(`خطأ في تحديث البيانات: ${updateError.message} (Code: ${updateError.code})`);
+        throw new Error(`خطأ في تحديث البيانات: ${updateError.message}`);
       }
 
-      // 4. Success Feedback
       setStatus({ 
         type: 'success', 
         message: 'تم استلام طلبك بنجاح! جاري المراجعة' 
       });
 
-      // 5. Success UI and Redirection after 2 seconds
       setTimeout(() => {
         setSuccess(true);
         setTimeout(() => {
@@ -192,8 +187,8 @@ const Checkout: React.FC<CheckoutProps> = ({ user }) => {
 
       <main className="max-w-4xl mx-auto p-6 md:p-12">
         {status.type && (
-          <div className={`mb-8 p-6 rounded-[2rem] flex items-center gap-4 border-2 animate-in slide-in-from-top-4 duration-500 shadow-xl ${
-            status.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-red-50 border-red-200 text-red-800'
+          <div className={`fixed top-24 left-1/2 -translate-x-1/2 z-[100] mb-8 p-6 rounded-[2rem] flex items-center gap-4 border-2 animate-in slide-in-from-top-4 duration-500 shadow-xl ${
+            status.type === 'success' ? 'bg-emerald-600 border-emerald-500 text-white' : 'bg-red-600 border-red-500 text-white'
           }`} dir="rtl">
             {status.type === 'success' ? <CheckCircle2 className="shrink-0" size={28} /> : <AlertCircle className="shrink-0" size={28} />}
             <span className="text-lg font-black">{status.message}</span>
@@ -204,48 +199,50 @@ const Checkout: React.FC<CheckoutProps> = ({ user }) => {
           <div className="lg:col-span-7 space-y-8" dir="rtl">
             <header>
               <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">تعليمات الدفع</h1>
-              <p className="text-slate-500 font-medium text-lg">يرجى تحويل المبلغ الإجمالي إلى أحد حسابات Wassit DZ التالية.</p>
+              <p className="text-slate-500 font-medium text-lg italic">يرجى تحويل المبلغ الإجمالي لإكمال الطلب</p>
             </header>
 
-            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-8 shadow-sm space-y-6">
-              <div className="flex items-center gap-4 pb-6 border-b border-slate-50">
-                <div className="bg-indigo-50 p-3 rounded-2xl text-indigo-600">
-                  <ShieldCheck size={28} />
+            <div className="bg-white rounded-[2.5rem] border border-slate-200 p-10 shadow-sm flex flex-col items-center justify-center text-center space-y-8">
+              
+              {/* Amount Display Card */}
+              <div className="w-full bg-indigo-600 rounded-[2rem] p-8 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <Banknote size={80} />
                 </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">صاحب الحساب</p>
-                  <p className="text-xl font-black text-slate-900">Oulhaci Mohmed</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="group relative">
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 mr-1">رقم الحساب (CCP/RIP)</label>
-                  <div className="flex items-center justify-between bg-slate-50 border border-slate-100 p-5 rounded-2xl hover:border-indigo-200 transition-colors">
-                    <span className="text-lg font-black font-mono tracking-wider text-slate-800">00799999004290770859</span>
+                <div className="relative z-10">
+                  <p className="text-indigo-100 font-black text-xs uppercase tracking-[0.2em] mb-2">المبلغ المطلوب دفعه</p>
+                  <div className="flex items-center justify-center gap-4">
+                    <h2 className="text-5xl font-black tracking-tighter">
+                      {order?.total_price_dzd?.toLocaleString()} <span className="text-xl opacity-70">DZD</span>
+                    </h2>
                     <button 
-                      onClick={() => {
-                        navigator.clipboard.writeText('00799999004290770859');
-                        setStatus({ type: 'success', message: 'تم نسخ رقم الحساب بنجاح' });
-                        setTimeout(() => setStatus({ type: null, message: '' }), 2000);
-                      }}
-                      className="text-slate-300 hover:text-indigo-600 p-2 transition-colors active:scale-90"
-                      title="نسخ الرقم"
+                      onClick={() => copyToClipboard(order?.total_price_dzd?.toString() || '', 'تم نسخ المبلغ')}
+                      className="p-3 bg-white/20 hover:bg-white/30 rounded-2xl transition-all active:scale-90"
+                      title="نسخ المبلغ"
                     >
                       <Copy size={20} />
                     </button>
                   </div>
                 </div>
+              </div>
 
-                <div className="group relative">
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 mr-1">Baridimob / بريديموب</label>
-                  <div className="flex items-center justify-between bg-slate-50 border border-slate-100 p-5 rounded-2xl hover:border-indigo-200 transition-colors">
-                    <span className="text-lg font-black font-mono tracking-wider text-slate-800">0654235524</span>
-                    <div className="bg-amber-100 text-amber-700 p-1.5 rounded-lg">
-                      <Smartphone size={20} />
-                    </div>
-                  </div>
+              <div className="w-full space-y-4">
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1">رقم الحساب (RIP/CCP)</label>
+                <div className="w-full flex items-center justify-between bg-slate-50 border border-slate-100 p-6 rounded-3xl hover:border-indigo-200 transition-colors group">
+                  <span className="text-xl md:text-2xl font-black font-mono tracking-wider text-slate-800 flex-1">{ACCOUNT_RIP}</span>
+                  <button 
+                    onClick={() => copyToClipboard(ACCOUNT_RIP, 'تم نسخ رقم الحساب')}
+                    className="text-slate-300 hover:text-indigo-600 p-3 bg-white rounded-2xl shadow-sm transition-all active:scale-90"
+                    title="نسخ الرقم"
+                  >
+                    <Copy size={24} />
+                  </button>
                 </div>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3 text-amber-600 bg-amber-50 px-6 py-4 rounded-2xl text-xs font-bold border border-amber-100 leading-relaxed">
+                <AlertCircle size={20} className="shrink-0" />
+                تأكد من تحويل المبلغ الموضح أعلاه بدقة لتفادي أي تأخير في معالجة طلبك.
               </div>
             </div>
           </div>

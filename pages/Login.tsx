@@ -13,7 +13,8 @@ import {
   ShieldCheck, 
   BadgeCheck, 
   Truck, 
-  Wallet 
+  Wallet,
+  MessageCircle
 } from 'lucide-react';
 
 const Login: React.FC = () => {
@@ -80,7 +81,18 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans flex flex-col items-center py-12 px-4 overflow-x-hidden" dir="rtl">
+    <div className="min-h-screen bg-slate-50 font-sans flex flex-col items-center py-12 px-4 overflow-x-hidden relative" dir="rtl">
+      
+      {/* Contact Us Floating Button */}
+      <a 
+        href="mailto:amineoulhaci11@gmail.com" 
+        className="fixed bottom-6 left-6 z-[100] bg-white text-indigo-600 p-4 rounded-full shadow-2xl border border-indigo-100 hover:scale-110 hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-3 font-black text-sm group"
+        title="اتصل بنا"
+      >
+        <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 ease-in-out whitespace-nowrap">اتصل بنا</span>
+        <Mail size={24} />
+      </a>
+
       {/* Trust Banner / Header */}
       <div className="w-full max-w-4xl text-center mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
         <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">

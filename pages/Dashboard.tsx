@@ -18,7 +18,9 @@ import {
   ArrowRight,
   ShieldCheck,
   BadgeCheck,
-  Wallet
+  Wallet,
+  Mail,
+  MessageSquareWarning
 } from 'lucide-react';
 import OrderForm from '../components/OrderForm';
 import { Order, OrderStatus } from '../types';
@@ -80,15 +82,22 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-2">
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50" dir="rtl">
+        <div className="flex items-center gap-4">
           <div className="bg-indigo-600 p-2.5 rounded-2xl text-white shadow-lg shadow-indigo-200">
             <PlusCircle size={22} />
           </div>
-          <span className="font-black text-slate-900 text-2xl tracking-tight hidden sm:inline">جديد</span>
+          <span className="font-black text-slate-900 text-2xl tracking-tight hidden sm:inline">طلب جديد</span>
         </div>
         
-        <div className="flex items-center gap-1 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link 
+            to="/my-complaints" 
+            className="flex items-center gap-2 text-red-600 font-bold text-sm bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-xl transition-colors border border-red-100"
+          >
+            <MessageSquareWarning size={18} />
+            <span className="hidden md:inline">شكواتي</span>
+          </Link>
           <Link 
             to="/history" 
             className="flex items-center gap-2 text-indigo-600 font-bold text-sm bg-indigo-50 hover:bg-indigo-100 px-4 py-2.5 rounded-xl transition-colors"
@@ -117,7 +126,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 font-bold border border-indigo-100">
               {user.email?.charAt(0).toUpperCase()}
             </div>
-            <div className="pl-4 text-left">
+            <div className="pr-4 text-right">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">أهلاً بك</p>
               <p className="text-slate-900 font-bold text-sm">{user.email}</p>
             </div>
@@ -126,29 +135,29 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
         {/* Reassurance/Trust Bar */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" dir="rtl">
-          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-amber-400 transition-colors border-l-4 border-l-amber-400">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-amber-400 transition-colors border-r-4 border-r-amber-400">
             <div className="bg-amber-50 p-3 rounded-2xl text-amber-600">
               <ShieldCheck size={24} />
             </div>
-            <div>
+            <div className="text-right">
               <h4 className="font-black text-slate-900 text-sm">ضمان الجودة</h4>
               <p className="text-[10px] font-bold text-slate-400">تحقق كامل قبل الإرسال</p>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-indigo-400 transition-colors border-l-4 border-l-indigo-400">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-indigo-400 transition-colors border-r-4 border-r-indigo-400">
             <div className="bg-indigo-50 p-3 rounded-2xl text-indigo-600">
               <Wallet size={24} />
             </div>
-            <div>
+            <div className="text-right">
               <h4 className="font-black text-slate-900 text-sm">دفع آمن</h4>
               <p className="text-[10px] font-bold text-slate-400">نظام الدفع المعلق المضمون</p>
             </div>
           </div>
-          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-emerald-400 transition-colors border-l-4 border-l-emerald-400">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4 hover:border-emerald-400 transition-colors border-r-4 border-r-emerald-400">
             <div className="bg-emerald-50 p-3 rounded-2xl text-emerald-600">
               <Truck size={24} />
             </div>
-            <div>
+            <div className="text-right">
               <h4 className="font-black text-slate-900 text-sm">تتبع دولي</h4>
               <p className="text-[10px] font-bold text-slate-400">متابعة الشحنة خطوة بخطوة</p>
             </div>
@@ -202,7 +211,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                           <h4 className="font-bold text-slate-900 truncate text-sm mb-1">
                             {order.color} • {order.size}
                           </h4>
-                          <div className="flex justify-between items-end flex-row-reverse">
+                          <div className="flex justify-between items-end">
                              <p className="font-black text-indigo-600 text-base">{order.price_dzd.toLocaleString()} <span className="text-[10px]">DZD</span></p>
                              <a href={order.product_url} target="_blank" rel="noreferrer" className="text-slate-300 hover:text-indigo-600 transition-colors">
                                <ExternalLink size={14} />

@@ -5,8 +5,11 @@ import { supabase, isSupabaseConfigured } from './supabaseClient';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import AdminComplaints from './pages/AdminComplaints';
+import UserComplaints from './pages/UserComplaints';
 import OrdersHistory from './pages/OrdersHistory';
 import Checkout from './pages/Checkout';
+import ComplaintCenter from './components/ComplaintCenter';
 import { ShieldAlert, Loader2 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -70,10 +73,13 @@ const App: React.FC = () => {
         <Route path="/login" element={session ? <Navigate to={isAdmin ? "/admin" : "/dashboard"} /> : <Login />} />
         <Route path="/dashboard" element={session ? <Dashboard user={session.user} /> : <Navigate to="/login" />} />
         <Route path="/history" element={session ? <OrdersHistory user={session.user} /> : <Navigate to="/login" />} />
+        <Route path="/my-complaints" element={session ? <UserComplaints user={session.user} /> : <Navigate to="/login" />} />
         <Route path="/checkout/:orderId" element={session ? <Checkout user={session.user} /> : <Navigate to="/login" />} />
         <Route path="/admin" element={isAdmin ? <Admin user={session.user} /> : <Navigate to="/dashboard" />} />
+        <Route path="/admin/complaints" element={isAdmin ? <AdminComplaints user={session.user} /> : <Navigate to="/dashboard" />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      {session && !isAdmin && <ComplaintCenter user={session.user} />}
     </HashRouter>
   );
 };

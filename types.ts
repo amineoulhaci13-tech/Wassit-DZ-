@@ -1,6 +1,7 @@
 
 export type AuthMode = 'login' | 'register';
 export type OrderStatus = 'Pending' | 'Paid' | 'Purchased' | 'Shipped';
+export type ComplaintStatus = 'Pending' | 'Resolved' | 'Rejected';
 
 export interface Order {
   id: string;
@@ -22,4 +23,16 @@ export interface Order {
   tracking_number?: string;
   created_at: string;
   agreed_to_terms: boolean;
+}
+
+export interface Complaint {
+  id: string;
+  user_id: string;
+  user_email?: string;
+  message: string;
+  proof_url?: string;
+  status: ComplaintStatus;
+  admin_notes?: string;
+  created_at: string;
+  user_phone?: string; // Optional field joined from orders
 }
