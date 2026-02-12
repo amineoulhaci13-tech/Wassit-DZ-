@@ -1,3 +1,4 @@
+
 {
   "compilerOptions": {
     "target": "ESNext",
@@ -17,6 +18,20 @@
     "jsx": "react-jsx",
     "types": ["vite/client"]
   },
-  "include": ["./**/*.ts", "./**/*.tsx"],
-  "exclude": ["node_modules", "supabase", "dist"]
+  "include": [
+    "index.tsx",
+    "App.tsx",
+    "supabaseClient.ts",
+    "types.ts",
+    "translations.ts",
+    "components/**/*",
+    "context/**/*",
+    "pages/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "supabase",
+    "supabase/**"
+  ]
 }
