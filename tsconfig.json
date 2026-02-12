@@ -16,7 +16,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "rootDir": "."
   },
   "include": [
     "index.tsx",
@@ -31,7 +32,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "supabase",
-    "supabase/**"
+    "supabase"
   ]
 }
