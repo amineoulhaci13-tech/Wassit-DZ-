@@ -100,7 +100,7 @@ export const translations = {
     about_us_why_3_text: "نحن هنا لنمثلك ونساعدك في حل أي مشكلة قد تواجهها مع البائعين الأجانب.",
 
     // Login Errors
-    invalid_credentials_hint: "بيانات الدخول غير صحيحة. هل تملك حساباً؟ إذا كنت مستخدماً جديداً يرجى اختيار 'إنشاء حساب'.",
+    invalid_credentials_hint: "البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى التأكد من البيانات أو إنشاء حساب جديد إذا كنت مستخدماً جديداً.",
     show_password: "إظهار",
     hide_password: "إخفاء"
   },
@@ -204,7 +204,7 @@ export const translations = {
     about_us_why_3_text: "Our complaints center is designed to assist you in resolving any issues with international sellers effectively.",
 
     // Login Errors
-    invalid_credentials_hint: "Invalid credentials. Do you have an account? If you are a new user, please choose 'Join Now'.",
+    invalid_credentials_hint: "Incorrect email or password. Please double-check your entries or create a new account if you haven't joined yet.",
     show_password: "Show",
     hide_password: "Hide"
   }
